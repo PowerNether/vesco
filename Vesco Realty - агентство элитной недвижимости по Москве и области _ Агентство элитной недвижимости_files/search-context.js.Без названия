@@ -1,0 +1,186 @@
+(function ($) { Drupal.behaviors.searchContext = { attach: function (context, settings) {
+
+// Обработка ввода
+$('#search-context input[name=search-context]').keyup(function(e) {
+  var key_pressed = (typeof(e.keyCode) != 'undefined' ? e.keyCode : e.which);
+  if (key_pressed != 40 && key_pressed != 38 && key_pressed != 13) {
+    var search_text = $(this).val();
+    if (search_text.length > 0) {
+      $(this).attr('data-original-key', search_text);
+      $.ajax({
+        url: '/system/search-context',
+        type: 'post',
+        data: 'data=' + $.toJSON(search_text),
+        success: search_result
+      });
+    } else {
+     $('#search-context .result').html('');
+    }
+  }
+});
+
+// Обработка результатов
+function search_result(data) {
+  var result_html = $('#search-context .result');
+  result_html.show();
+  var data = eval(data);
+  var count = data['count'];
+  var key = data['key'];
+  var key_rule = data['key_rule'];
+  var key_translit = data['key_translit'];
+  if (count == 0) {
+    result_html.html('<div class="line">Результатов нет</div>');
+  } else if (count == '1') {
+    var result = data['result']['0'];
+    // Прочие значения
+    var output = search_result_out(result);
+    result_html.html(output);
+    $('#search-context .result .line .name').highlight(key);
+    $('#search-context .result .line .name').highlight(key_rule);
+    $('#search-context .result .line .name').highlight(key_translit);
+  } else {
+    $('#search-context .result').html('');
+    $.each(data['result'], function(key, value) {
+      var result = data['result'][key];
+      // Прочие значения
+      var output = search_result_out(result);
+      result_html.append(output);
+    });
+    $('#search-context .result .line .name').highlight(key);
+    $('#search-context .result .line .name').highlight(key_rule);
+    $('#search-context .result .line .name').highlight(key_translit);
+  }
+};
+// Скрытие при клике вне
+$(document).on('click', 'body.search-result', function(event) {
+  if ($(event.target).closest('#search-context .result').length == 0 && $(event.target).attr('name') != 'search-context') {
+    $('#search-context .result').hide();
+    $('body').removeClass('search-result');
+  }
+});
+// Навигация стрелками
+var selected_li = null;
+$('#search-context').bind('keydown', function(e) {
+  var key_pressed = (typeof(e.keyCode) != 'undefined' ? e.keyCode : e.which);
+  if (key_pressed == 40 || key_pressed == 38) {
+    if (selected_li == null) {
+      selected_li = $('#search-context .result div:eq(0)');
+    } else {
+      if (key_pressed == 40) {
+        next_li = selected_li.next();
+      } else {
+        next_li = selected_li.prev();
+      }
+      if (next_li.size() > 0) {
+        selected_li = next_li;
+      } else {
+        selected_li = null;
+      }
+    }
+    $('#search-context .result div').css('background', '#fff');
+    if (selected_li == null) {
+      var name = $('#search-context input[name=search-context]').attr('data-original-key');
+    } else {
+      selected_li.focus().css('background', '#e5e5e5');
+      var name = selected_li.find('.name').text();
+    }
+    $('#search-context input[name=search-context]').val(name);
+  } else if (key_pressed == 13) {
+    if (selected_li != null) {
+      var url = selected_li.attr('data-url');
+      window.location = url;
+    } else {
+      var url = $('#search-context .result div:eq(0)').attr('data-url');
+      if (url) {
+        window.location = url;
+      }
+    }
+    $('#search-context .result').html('');
+  }
+});
+
+$('#search-context .icon-search').on('click', function() {
+  var url = $('#search-context .result div:eq(0)').attr('data-url');
+  if (url) window.location = url;
+});
+
+
+
+// Показ результатов, если они есть при клике на поле ввода
+$('input[name=search-context]').on('mousedown', function() {
+  var result = ('#search-context .result');
+  $('#search-context .result').show();
+  $('body').addClass('search-result');
+});
+// Вывод результатов
+function search_result_out(result) {
+  // Прочие значения
+  var search_values_result = search_values(result);
+  var type = search_values_result['type'];
+  var type_type = search_values_result['type_type']
+  var type_num = result['type'];
+  var count = result['count'];
+  var url = result['url'];
+  // Шаблон вывода
+  var output = '<div class="line" data-id="'+result['id']+'" data-sid="'+result['sid']+'" data-url="'+url+'" data-type="'+result['type']+'">';
+  output += '<span class="type">'+type+'</span>';
+  output += '<a href="'+url+'" target="_blank" class="name">'+result['name']+'</a>';
+  // Для терминов
+  var number_count_termin = ['результат', 'результата', 'результатов'];
+  var number_count_node = ['объект', 'объекта', 'объектов'];
+
+  if (type_type == 1) {
+    output += '<span class="count">('+result['count']+' '+getNumEnding(result['count'], number_count_termin)+')</span>';
+  } else if (type_type == 2 && type_num !== '12') {
+    if (result['count'] == 0) {
+      output += '<span class="count">(объектов в продаже нет)</span>';
+    } else {
+      output += '<span class="count"><a class="sale-property" href="'+url+'/sale" target="_blank">('+result['count']+' '+getNumEnding(result['count'], number_count_node)+' в продаже)</a></span>';
+    }
+  }
+  output += '</div>';
+  return output;
+}
+// Различные параметры из фун-ций php
+function search_values(result) {
+  var type = result['type']-1;
+  var type_out = Drupal.settings.searchContext['type'][type]['name'];
+  var type_type = Drupal.settings.searchContext['type'][type]['type'];
+  // Вывод
+  var output = {
+    'type': type_out,
+    'type_type': type_type
+  };
+  return output;
+}
+// Переход при клике
+$('#search-context .result').on('click', '.line', function(e) {
+  if (e.target.nodeName !== 'A') {
+    var url = $(this).attr('data-url');
+    if (url) { window.location = url; }
+    else { $(this).css('cursor', 'pointer'); }
+    return false;
+  }
+});
+// Правильное окончание
+function getNumEnding(number, endings) {
+    var ending, i;
+    number = number % 100;
+    if (number>=11 && number<=19) {
+        ending = endings[2];
+    } else {
+      i = number % 10;
+      switch (i) {
+        case (1): ending = endings[0]; break;
+        case (2):
+        case (3):
+        case (4): ending = endings[1]; break;
+        default: ending = endings[2];
+      }
+    }
+  return ending;
+}
+
+
+
+}}})(jQuery);

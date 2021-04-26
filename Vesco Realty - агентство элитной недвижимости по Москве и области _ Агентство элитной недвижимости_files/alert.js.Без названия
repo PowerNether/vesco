@@ -1,0 +1,253 @@
+(function($) {
+var spinner = '<div class="spinner"><div class="spinner-container container1"><div class="circle1"></div><div class="circle2"></div><div class="circle3"></div><div class="circle4"></div></div><div class="spinner-container container2"><div class="circle1"></div><div class="circle2"></div><div class="circle3"></div><div class="circle4"></div></div><div class="spinner-container container3"><div class="circle1"></div><div class="circle2"></div><div class="circle3"></div><div class="circle4"></div></div></div><div class="text">Выполняется загрузка<span id="blink1">...</span></div>';
+// проверка num
+function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
+var methods = {
+    filter_get_value: function(options) {
+    	var value = options['value'];
+    	value = value.replace('?type', 'type').replace(/&/g,'|||').replace(/%5B/g,'').replace(/%5D/g,'');
+		return value;
+    },
+    counter: function() {
+    	// Тип недвижимости
+		var type = $('#search-filter .right-box input[name=type]').val();
+		// select`ы
+		var values = {};
+		$('#search-filter .type-property .input-select select').each(function() {
+			var type = $(this).attr('name').replace('[]', '');
+			var count = $('#search-filter .type-property .input-select select[name="'+type+'[]"] option:selected').length;
+			if (count > 0) {
+				var value = $('#search-filter .type-property .input-select select[name="'+type+'[]"] option:selected');
+				value = $.map(value, function(obj){ return obj.value}).join(',');
+				values[type] = value;
+			}
+		});
+		$('#search-filter .type-property input[type=text]').each(function() {
+			var type = $(this).attr('name');
+			var value = $(this).val().replace(/\s*/g,'');
+			if (value > 0) values[type] = value;
+		});
+		// terms
+		if ($('#search-filter .right-box select[name="terms[]"] option:selected').length > 0) {
+			var value = $('#search-filter .right-box select[name="terms[]"] option:selected');
+			value = $.map(value, function(obj){ return obj.value}).join(',');
+			values['terms'] = value;
+		}
+		// Прочие параметры
+		$('#search-filter .type-property .one-check input:checked').each(function() {
+			var type = $(this).attr('name');
+			var value = $(this).val();
+			if (type == 'protection[]') {
+				if (values['protection']) {
+					value = [values['protection'], value];
+                    values['protection'] = value;
+				}
+				else values['protection'] = value;
+            } else if (type == 'newcomplex[]') {
+				if (values['newcomplex']) {
+					value = [values['newcomplex'], value];
+                    values['newcomplex'] = value;
+				}
+				else values['newcomplex'] = value;
+            } else values[type] = value;
+		});
+		// Передача параметров
+		var	maps = false;
+		if ($('body.page-filter').length > 0 || $('body.page-filter2').length > 0) maps = true;
+		var info = {
+        	'type': 'filter-count',
+        	'property': type,
+        	'values': values,
+        	'maps': maps
+		};
+		$.ajax({
+			url: '/system/ajax-option',
+			type: 'post',
+			data: 'data=' + $.toJSON(info),
+			success: function(count) {
+			   	$('#search-filter .buttons .count').text(count['count']);
+			   	// Если это уже страница фильтра
+			   	if (maps && $('body.page-filter').length > 0 || $('body.page-filter2').length > 0) {
+			   		ymaps.ready(function () {
+				   		$('#maps-filter').html('').css('height', '400px');
+				   		var map = new ymaps.Map('maps-filter', {center: [55.7517318022522, 37.61691485505143], zoom: 1, controls: []});
+				   		ymaps.modules.require(['PieChartClusterer'], function (PieChartClusterer) {
+			            	var customItemContentLayout = ymaps.templateLayoutFactory.createClass('<div class=ballon_body>{{properties.balloonContent|raw }}</div>');
+			        		var clusterer = new PieChartClusterer({clusterDisableClickZoom: false, clusterBalloonItemContentLayout: customItemContentLayout, clusterBalloonContentLayoutHeight: 270, clusterBalloonContentLayoutWidth: 800, clusterBalloonLeftColumnWidth: 160});
+			        		var objects = count['nids'];
+				      		var points = [];
+				        	// Выводим объекты
+				        	$.each(objects, function (index, val) {
+				          		points[index] = new ymaps.Placemark(
+				                	[val.lat, val.lon],
+				                	{balloonContent: val.nid, iconContent: val.type, clusterCaption: val.type},
+				                	{preset: val.preset}
+				            	);
+				        	});
+			        		clusterer.add(points);
+			        		/*
+			        		map.geoObjects.options.set({
+                                balloonPane: 'outerBalloon',
+                                balloonShadowPane: 'outerBalloon'
+                            });
+                            */
+			        		map.geoObjects.add(clusterer);
+			        		map.geoObjects.options.set('balloonMaxWidth', 750);
+			        		map.geoObjects.events.add('click', function (e) {
+								var obj = e.get('target');
+								var nid = obj.properties.get('balloonContent');
+								var newballoon = spinner;
+				          		if (isNumber(nid)) {
+				            		obj.properties.set('balloonContent', newballoon);
+							        var info = {
+							            'type': 'ballooncontent',
+							            'nid': nid
+							        }
+							        $.ajax({
+										url: '/system/ajax-option',
+										type: 'post',
+										data: 'data=' + $.toJSON(info),
+										success: function(data) {
+											obj.properties.set('balloonContent', data);
+										}
+									});
+				          		} else {
+				          			if (map.getZoom() >= 18 && obj.properties.get('geoObjects').length > 0) {
+				          				$.each(obj.properties.get('geoObjects'), function(index, val) {
+				          					nid = val.properties.get('balloonContent');
+				          					if (isNumber(nid)) {
+				          						newballoon = spinner;
+				          						val.properties.set('balloonContent', newballoon);
+				          						var info = {
+										            'type': 'ballooncontent',
+										            'nid': nid
+										        }
+										        $.ajax({
+													url: '/system/ajax-option',
+													type: 'post',
+													data: 'data=' + $.toJSON(info),
+													success: function(data) {
+														val.properties.set('balloonContent', data);
+													}
+												});
+				          					}
+				          				});
+				          			}
+				          		}
+			        		});
+			        		// center
+			        		var centerAndZoom = ymaps.util.bounds.getCenterAndZoom(map.geoObjects.getBounds(), map.container.getSize());
+			      			map.setCenter(centerAndZoom.center);
+			      			// zoom
+			      			var mapSize = map.container.getSize();
+							var centerAndZoom = ymaps.util.bounds.getCenterAndZoom(
+								map.geoObjects.getBounds(),
+								mapSize,
+								ymaps.projection.wgs84Mercator, {margin: 30}
+							);
+							map.setZoom(centerAndZoom.zoom <= 16 ? centerAndZoom.zoom : 16);
+			        	});
+				   	});
+				}
+			}
+      	});
+    },
+    select_container: function(options) {
+    	var type = options['type'];
+    	// Значения в этом поле
+    	var exclude = ['decor', 'offer', 'okrug', 'offer_flat', 'rating', 'ratingp'];
+		var exclude_type = '';
+		if ($.fn.vr_filter('in_array', {'value': type, 'array': exclude})) {
+			exclude = 'yes';
+			exclude_type = '-mini';
+		}
+		// Обнуление всех
+		$('#search-filter .type-property .'+type+' .input-select select option').prop('selected', false);
+		$('#search-select .'+type+' .content').html('');
+		// Выборка в список при клике
+		if (exclude == 'yes') {
+			// hook decor
+			$('#search-filter .right-box .'+type+' .select-filter-mini-content li.active').each(function() {
+				var tid = $(this).attr('data-termin-tid');
+				var name = $(this).text();
+				$('#search-filter .type-property .'+type+' .input-select select option[value="'+tid+'"]').prop('selected', true);
+				$('#search-select .'+type+' .content').append('<div class="line" data-termin-tid="'+tid+'">'+name+'</div>');
+			});
+		} else {
+			$('#select-container .content[data-content-type="'+type+'"] .box-line .line.active').each(function() {
+				var tid = $(this).attr('data-termin-tid');
+				$('#search-filter .type-property .'+type+' .input-select select option[value="'+tid+'"]').prop('selected', true);
+				// запись в список выбранных
+				var name = $(this).text().replace(' шоссе', '');
+				$('#search-select .'+type+' .content').append('<div class="line" data-termin-tid="'+tid+'">'+name+'</div>');
+			});
+		}
+		// Подсчет количества
+		var count = $('#search-filter .type-property .'+type+' .input-select select:first option:selected').length;
+		if (count == 0) {
+			$('#search-filter .type-property .'+type+' .select-filter'+exclude_type).html('Выбрать <span class="icon-arrow-down"></span>');
+			$('#search-select .'+type).addClass('hide');
+		} else {
+			$('#search-select .'+type).removeClass('hide');
+			$('#search-filter .type-property .'+type+' .select-filter'+exclude_type).html('Выбрано - '+count);
+		}
+		$.fn.vr_filter('counter');
+    },
+    in_array: function(options) {
+    	var value = options['value'];
+    	var array = options['array'];
+		for (var i = 0; i < array.length; i++) {
+			if (array[i] == value) return true;
+		}
+		return false;
+    },
+    placeholder: function() {
+    	// placeholder
+		$('input[name="submitted[name]"]').attr('placeholder', 'Например: Дмитрий');
+		$('input[name="submitted[phone]"]').attr('placeholder', 'Например: +7 (495) 999-99-99');
+		$('input[name="submitted[email]"]').attr('placeholder', 'Например: info@vesco.ru');
+		$('input[name="submitted[phone]"]').mask('+9 (999) 999-99-99');
+    },
+    scrollbarWidth: function() {
+		var parent, child, width;
+		if (width === undefined) {
+    		parent = $('<div style="width:50px;height:50px;overflow:auto"><div/></div>').appendTo('body');
+    		child = parent.children();
+    		width = child.innerWidth()-child.height(99).innerWidth();
+    		parent.remove();
+  		}
+		return width;
+	},
+	selectbox: function(options) {
+		var type = options['type'];
+		if ($('#search-filter .right-box .'+type+' .input-select select').length == 0) {
+			var info = {
+				'type': 'filter-box',
+				'field': type,
+				'property': $('#search-filter .right-box input[name="type"]').val()
+			}
+			$.ajax({
+				url: '/system/ajax-option',
+				type: 'post',
+				data: 'data=' + $.toJSON(info),
+				success: function(data) {
+					   $('#search-filter .right-box .'+type+' .input-select').html(data);
+				}
+		      });
+		}
+	}
+};
+
+
+$.fn.vr_filter = function( method ) {
+	if ( methods[method] ) {
+		return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
+	} else if ( typeof method === 'object' || ! method ) {
+		return methods.init.apply( this, arguments );
+	} else {
+		$.error('error');
+	} 
+};
+
+
+})(jQuery);

@@ -1,0 +1,678 @@
+(function($) {
+$(document).ready(function() {
+	// new flat
+	if ($('.box-termin-informer > .flat-new-build').length > 0) {
+		$('body').addClass('compact-flat-new');
+	}
+	$('#search-filter .price .in-box input.form-text').mask('9 999 999 999', {reverse: true});
+	$('#search-filter .box-10').on('click', 'input[type="submit"]', function() {
+		// Отключение пустых полей
+		$('#search-filter .box-10 input[type="text"], #search-filter .box-10 input[type="hidden"]').each(function() {
+			if ($(this).val() == '') $(this).attr('disabled', true);
+		});
+		// Отключение пустых select
+		$('#search-filter .box-10').find('select option[value="All"]:selected').attr('disabled', true);
+		// Комнаты (checkbox)
+		$('#search-filter .box-10 input[name="rooms"]').attr('disabled', true);
+		$('#search-filter .box-10 input[name="housefloor"]').attr('disabled', true);
+	});
+	// Переменные
+	var timeout;
+	var time = 1000;
+	// Переключение вкладок mobile
+	$('#search-filter .filter-box').on('change', '.property-type select', function() {
+		$('#search-filter .filter-box .right-box .line-type .type[data-type="'+$(this).val()+'"]').trigger('change');
+	});
+	$('#search-filter .filter-box').on('click change', '.right-box .line-type .type', function() {
+		$('#search-filter .box.box-10.last form').attr('action', '/filter2').attr('id', 'views-exposed-form-filter-page-2');
+		// Определяем тип
+		var type = $(this).attr('data-type');
+		var type_old = $('#search-filter .right-box .line-type .type.active').attr('data-type');
+		if (type !== type_old) {
+			$('#search-filter .right-box .line-type .type').removeClass('active');
+			$(this).addClass('active');
+			// Cookie
+			$.cookie('filter_type', type, { expires: 365, path: '/' });
+			var type_arr = {
+				'poselok': 'village',
+				'cottage':'house',
+				'townhouse':'townhouse',
+				'plot':'plot',
+				'complex':'complex',
+				'flat':'apartment'
+			};
+			// Выбираем контейнер с необходимыми полями
+			var info = {
+				'type': 'filter-type',
+				'type_property': type,
+				'param': $.fn.vr_filter('filter_get_value', {'value': window.location.search})
+			};
+			$('#search-filter .right-box .content-type').html('<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>');
+			$.ajax({
+				url: '/system/ajax-option',
+				type: 'post',
+				data: 'data=' + $.toJSON(info),
+				success: function(data) {
+					setTimeout(function () {
+						$('#search-select .line-box .content').html('');
+						$('#search-select .line-box').addClass('hide');
+						$('#search-filter .right-box .content-type').html('').hide().html(data).fadeIn('200');
+						var cy = $('#informer .cy-btn div.active').data('cy');
+						$('#search-filter .cy-btn div.'+cy+'-btn').addClass('active');
+						$('#search-select .filter-metro-map').html('');
+						$('.metro-map').html('');
+						$.fn.vr_filter('counter');
+					}, 100);
+				}
+			});
+		}
+	});
+	// Открытие контейнера с выбором чего либо (Шоссе, Район)
+	$('#search-filter .filter-box').on('click', '.right-box .select-filter', function() {
+		var type = $(this).attr('data-filter-select');
+		var type_property = $('.type-property').attr('data-type');
+		// Параметры
+		var info = {
+			'type': 'search-container',
+			'type_select': type,
+			'type_property': type_property
+		};
+		$.ajax({
+			url: '/system/ajax-option',
+			type: 'post',
+			data: 'data=' + $.toJSON(info),
+ 			success: function(data) {
+ 				// Вставка контейнера
+ 				$('body').append(data).addClass('select-container-modal');
+ 				$('#select-container .content[data-content-type="'+type+'"]').removeClass('hide');
+ 				// Обнулить и выставить активный
+ 				$('#select-container .type-line').removeClass('active');
+ 				$('#select-container .type-line[data-type="'+type+'"]').addClass('active');
+				// обновить значений для полей
+				$('#search-filter .type-property .input-select select').each(function() {
+					var type = $(this).attr('name').replace('[]', '');
+					if (type == 'highway') {
+						if ($('#search-filter .type-property .'+type+' .input-select select option:selected').length > 0) {
+							$('#search-filter .type-property .'+type+' .input-select select option:selected').each(function() {
+								var tid = $(this).val();
+								$('#select-container.select-container-highway .content .box-line .line[data-termin-tid="'+tid+'"]').addClass('active');
+							});
+						}
+					} else {
+						if ($('#search-filter .type-property .'+type+' .input-select select option:selected').length > 0) {
+							var box = $('#select-container .content[data-content-type="'+type+'"] .selected-box .box-line');
+							box.html('');
+							$('#search-filter .type-property .'+type+' .input-select select option:selected').each(function() {
+								var tid = $(this).val();
+								var name = $(this).text();
+								box.append('<div class="line active" data-termin-tid="'+tid+'">'+name+'</div>');
+							});
+						}
+					}
+				});
+				if (type_property == 'cottage' || type_property == 'townhouse' || type_property == 'poselok') {
+					var mkad_from = $('#search-filter .right-box .mkad input[name=mkad_from]').val();
+					var mkad_to = $('#search-filter .right-box .mkad input[name=mkad_to]').val();
+					$('#select-container .header-container .mkad input[name=mkad_from]').val(mkad_from);
+					$('#select-container .header-container .mkad input[name=mkad_to]').val(mkad_to);
+				}
+				var height = $(window).height();
+				if (height < 700) {
+					$('#select-container[data-filer-select-container="'+type+'"]').css('top', '50px');
+				}
+ 			}
+		});
+		$.fn.vr_filter('selectbox', {'type': type});
+	});
+	// Закрытие контейнера
+	$(document).on('click', '#select-container .close, #select-container .header-container .save', function() {
+		$('#select-container').fadeOut().delay(1000).remove();
+		$('body').removeClass('select-container-modal');
+	});
+	$(document).click(function (event) {
+        if ($(event.target).closest('#select-container').length == 0) {
+            $('#select-container').fadeOut().delay(1000).remove();
+            $('body').removeClass('select-container-modal');
+        }
+        if ($(event.target).closest('#search-filter .right-box .select-filter-mini-ul').length == 0) {
+            $('#search-filter .right-box .select-filter-mini-ul .select-filter-mini-content').removeClass('open').fadeOut();
+            $('#search-filter .right-box .select-filter-mini-ul .select-filter-mini').removeClass('open');
+        }
+        if ($(event.target).closest('.adminfilter .fbox .ib.select.open').length == 0) {
+        	$('.adminfilter .fbox .ib.select.open .selectlist').parent().find('.list').slideUp(150);
+			$('.adminfilter .fbox .ib.select.open .selectlist').removeClass('active');
+        }
+    });
+	// выбор в списке
+	$(document).on('click', '#select-container .content .box-line .line', function() {
+		$(this).toggleClass('active');
+		$.fn.vr_filter('select_container', {'type': 'highway'});
+	});
+	// выбор в списке по направлению
+	$(document).on('click', '#select-container .content .box-line .header-title', function() {
+		var t = $(this);
+		t.toggleClass('active');
+		var tids = $(this).attr('data-temin-tids').split(',');
+		$.each(tids, function(key, val) {
+			if (t.hasClass('active')) {
+				$('#select-container .content .box-line .line[data-termin-tid="'+val+'"]').addClass('active');
+			} else {
+				$('#select-container .content .box-line .line[data-termin-tid="'+val+'"]').removeClass('active');
+			}
+		});
+		$.fn.vr_filter('select_container', {'type': 'highway'});
+	});
+	// Удаление из списка выбранных (пользовательская часть)
+	$(document).on('click', '#search-select .line-box .content .line', function() {
+		var tid = $(this).attr('data-termin-tid');
+		var type = $(this).parent().parent().attr('data-type');
+		$('#search-filter .type-property .'+type+' .input-select select option[value="'+tid+'"]').prop('selected', false);
+		var count = $('#search-filter .type-property .'+type+' .input-select select:first option:selected').length;
+		if (count == 0) {
+			$('#search-filter .type-property .'+type+' .select-filter').html('Выбрать <span class="icon-arrow-down"></span>');
+			$('#search-select .'+type).addClass('hide');
+		} else {
+			$('#search-filter .type-property .'+type+' .select-filter').html('Выбрано - '+count);
+		}
+		$(this).remove();
+		$.fn.vr_filter('counter');
+	});
+	// Удалить сразу всё
+	$(document).on('click', '#search-select .line-box .title', function() {
+		var type = $(this).parent().attr('data-type');
+		$('#search-filter .type-property .'+type+' .input-select select option').prop('selected', false);
+		$('#search-filter .type-property .'+type+' .select-filter').html('Выбрать <span class="icon-arrow-down"></span>');
+		$('#search-filter .type-property .'+type+' .select-filter-mini-ul').html('Выбрать <span class="icon-plus"></span>');
+		$('#search-select .'+type).addClass('hide');
+		$.fn.vr_filter('counter');
+	});
+	// Открытие небольшого контейнера
+	$('#search-filter .filter-box').on('click', '.right-box .select-filter-mini', function() {
+		var content = $(this).parent().find('.select-filter-mini-content');
+		var field = $(this).attr('data-filter-select');
+		// Закрытие других
+		$('#search-filter .right-box .select-filter-mini-ul:not(.'+field+') .select-filter-mini').removeClass('open');
+		$('#search-filter .right-box .select-filter-mini-ul:not(.'+field+') .select-filter-mini-content').fadeOut();
+		// Открытие
+		$(this).toggleClass('open');
+		content.fadeToggle('200');
+	});
+	// Выбор из списка (небольшого контейнера)
+	$('#search-filter .filter-box').on('click', '.right-box .select-filter-mini-ul .select-filter-mini-content li', function() {
+		var tid = $(this).attr('data-termin-tid');
+		var type = $(this).parent().parent().find('.select-filter-mini').attr('data-filter-select');
+		// hook decor
+		$(this).toggleClass('active');
+		// hook decor 2
+		if (type == 'decor') {
+			// Под ключ
+			if (tid == '3' && $(this).hasClass('active')) {
+				$('.decor li[data-termin-tid="2"]').addClass('active');
+				$('.decor li[data-termin-tid="4"]').addClass('active');
+			} else if (tid == '3' && !$(this).hasClass('active')) {
+				$('.decor li[data-termin-tid="2"]').removeClass('active');
+				$('.decor li[data-termin-tid="4"]').removeClass('active');
+			}
+			// Если клик по одному из подпунктов
+			if (tid == '2' || tid == '4') {
+				if ($('.decor li[data-termin-tid="2"]').hasClass('active') && $('.decor li[data-termin-tid="4"]').hasClass('active')) {
+					$('.decor li[data-termin-tid="3"]').addClass('active');
+				} else if (!$('.decor li[data-termin-tid="2"]').hasClass('active') || !$('.decor li[data-termin-tid="4"]').hasClass('active')) {
+					$('.decor li[data-termin-tid="3"]').removeClass('active');
+				}
+			}
+		}
+		$.fn.vr_filter('select_container', {'type': type});
+	});
+	// Обновление данных в контейнере (мкад)
+	$(document).on('keyup', '#select-container .header-container .mkad input', function() {
+		var mkad_from = $('#select-container .header-container .mkad input[name=mkad_from]').val();
+		var mkad_to = $('#select-container .header-container .mkad input[name=mkad_to]').val();
+		$('#search-filter .right-box .mkad input[name=mkad_from]').val(mkad_from);
+		$('#search-filter .right-box .mkad input[name=mkad_to]').val(mkad_to);
+	});
+	// Переключение вкладок в контейнере
+	$(document).on('click', '#select-container .header-container .type .type-line', function() {
+		var type = $(this).attr('data-type');
+		// Выбор активной и обнуление другие
+		$('#select-container .header-container .type .type-line').removeClass('active');
+		$(this).addClass('active');
+		// Скрытие контента
+		$('#select-container .content').addClass('hide');
+		$('#select-container .content[data-content-type="'+type+'"]').removeClass('hide');
+		// Смена параметров
+		$('#select-container').attr('data-filer-select-container', type).removeClass().addClass('select-container select-container-'+type);
+		// Загрузка контейнера
+		$.fn.vr_filter('selectbox', {'type': type});
+	});
+	// Количество комнат
+	$('#search-filter .filter-box').on('click', '.right-box .select-filter-check .item-content .item label', function() {
+		var box = $(this).parent().parent().parent().find('.input-select');
+		var value = $(this).parent().find('input').val();
+		$(this).parent().toggleClass('active');
+		if ($(this).parent().hasClass('active')) {
+			box.find('select option[value="'+value+'"]').attr('selected', true);
+		} else {
+			box.find('select option[value="'+value+'"]').attr('selected', false);
+		}
+		$.fn.vr_filter('counter');
+	});
+	// Поиск по нас.пунктам и тому подобным
+	$(document).on('keyup', '#select-container .content input[type=text]', function(e) {
+		var key_pressed = (typeof(e.keyCode) != 'undefined' ? e.keyCode : e.which);
+		var t = $(this);
+		if (key_pressed != 13) {
+			var search_text = $(this).val();
+			if (search_text.length >= 2) {
+				t.attr('data-original-key', search_text);
+				var type_property = $('#search-filter input[name="type"]').val();
+				var type_termin = $('#select-container').attr('data-filer-select-container');
+				var exclude = $('#search-filter .type-property .'+type_termin+' .input-select select option:selected');
+				exclude = $.map(exclude, function(obj){ return obj.value}).join(',');
+				var info = {
+        			'type': 'filter-search',
+        			'type_property': type_property,
+        			'type_termin': type_termin,
+        			'string': search_text,
+        			'exclude': exclude
+				};
+				$.ajax({
+					url: '/system/ajax-option',
+					type: 'post',
+					data: 'data=' + $.toJSON(info),
+			        success: filter_search_result
+      			});
+			}
+		}
+	});
+	// Результаты поиска
+	function filter_search_result(data) {
+		data = eval(data);
+		var type = data['type'];
+		var property = data['property'];
+		var result = data['value'];
+		var result_out = $('#select-container .content[data-content-type="'+type+'"] .search-result');
+		result_out.html('');
+		$.each(data['value'], function(key, value) {
+			var tid = data['value'][key]['tid'];
+			var name = data['value'][key]['name'];
+			result_out.append('<div class="line" data-termin-tid="'+tid+'"><span class="icon-plus"></span> '+name+'</div>');
+		});
+		var key = $('#select-container .content[data-content-type="'+type+'"] input[type=text]').attr('data-original-key');
+		result_out.highlight(key);
+	}
+	// Выбор из поиска
+	$(document).on('click', '#select-container .content .one-box .search-result .line', function() {
+		var tid = $(this).attr('data-termin-tid');
+		var name = $(this).text();
+		var type = $(this).parent().parent().parent().attr('data-content-type');
+		$('#select-container .content .one-box .search-result .line[data-termin-tid="'+tid+'"]').hide();
+		var box = $('#select-container .content[data-content-type="'+type+'"] .selected-box .box-line');
+		var count = $('#search-filter .type-property .'+type+' .input-select select option:selected').length;
+		if (box.text() == 'Вы ещё ничего не выбрали') {
+			box.html('<div class="line active" data-termin-tid="'+tid+'">'+name+'</div>');
+		} else {
+			box.append('<div class="line active" data-termin-tid="'+tid+'">'+name+'</div>');
+		}
+		$.fn.vr_filter('select_container', {'type': type});
+	});
+	// Checkbox
+	$(document).on('change', '#search-filter .right-box .checkbox-item input', function() {
+		var select = $(this).attr('id');
+		select = select.split('-');
+		var box = $('select[name="'+select[0]+'[]"] option[value="'+select[1]+'"]');
+		if ($(this).is(':checked')) {
+			box.attr('selected', true);
+		} else {
+			box.attr('selected', false);
+		}
+		$.fn.vr_filter('counter');
+	});
+	$('#search-filter .filter-box').on('focusout', '.right-box .in-box input', function() {
+		$.fn.vr_filter('counter');
+	});
+	// Открытие карты метро
+	$('#search-filter').on('click', '.select-metro', function() {
+		if ($('#search-select .metro-map .filter-metro-map').length == 1) {
+			$('#search-select .metro-map').slideToggle();
+		} else {
+			var property = $('#search-filter input[name="type"]').val();
+			var info = {
+				'type': 'filter-metro-map',
+				'property': property
+			};
+			$('#search-select .metro-map').removeClass('hide').html('<div class="title-load">Загрузка карты...</div><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>').fadeIn();
+			$.ajax({
+				url: '/system/ajax-option',
+				type: 'post',
+				data: 'data=' + $.toJSON(info),
+				success: function(data) {
+					setTimeout(function () {
+			   			$('#search-select .metro-map').html('').hide().html(data).slideDown();
+			   			if ($('#search-select .metro-map svg').length) {
+				   			var metro = $('#search-select .metro-map svg').attr('data-info');
+				   			$.each(eval(metro), function(index, val) {
+				   				$('#search-select .filter-metro-map .mapsvg .text tspan:contains('+val.name+')').closest('g').addClass('active');
+				   			});
+				   		}
+			   			// Отметка выбранных
+			   			if ($('#search-filter .type-property .metro .input-select select option:selected').length > 0) {
+			   				$('#search-filter .type-property .metro .input-select select option:selected').each(function() {
+			   					var tid = $(this).val();
+			   					var t = $('#search-select .filter-metro-map .name[data-termin-tid="'+tid+'"]');
+			   					var id = t.attr('data-termin-id');
+								var other_id = t.attr('data-termin-other');
+								var tid = t.attr('data-termin-tid');
+								if (other_id.length > 0) {
+									other_id = other_id.split(',');
+									$('#search-select .metro-map .name[data-termin-id="'+id+'"]').toggleClass('active');
+									$('#search-select .metro-map .point[data-termin-id="'+id+'"]').toggleClass('active');
+									$.each(other_id, function(key, value) {
+										$('#search-select .metro-map .name[data-termin-id="'+value+'"]').toggleClass('active');
+										$('#search-select .metro-map .point[data-termin-id="'+value+'"]').toggleClass('active');
+									});
+								} else {
+									$('#search-select .metro-map .name[data-termin-id="'+id+'"]').toggleClass('active');
+									$('#search-select .metro-map .point[data-termin-id="'+id+'"]').toggleClass('active');
+								}
+							});
+							// Скрыть или показать fade
+							if ($('#search-select .metro-map .name.active').length > 0) {
+								$('#search-select .metro-map .fade').css('display', 'block');
+								$('#search-select .filter-metro-map').addClass('active');
+							} else {
+								$('#search-select .metro-map .fade').css('display', 'none');
+								$('#search-select .filter-metro-map').removeClass('active');
+							}
+			   			}
+
+			   		}, 100);
+			   	}
+			});
+		}
+	});
+	// Поставить метку
+	$('#search-select').on('click', '.metro-map .name:not(.no-active), #search-select .metro-map .point:not(.no-active)', function() {
+		var id = $(this).attr('data-termin-id');
+		var other_id = $(this).attr('data-termin-other');
+		var tid = $(this).attr('data-termin-tid');
+		if (other_id.length > 0) {
+			other_id = other_id.split(',');
+			$('#search-select .metro-map .name[data-termin-id="'+id+'"]').toggleClass('active');
+			$('#search-select .metro-map .point[data-termin-id="'+id+'"]').toggleClass('active');
+			$.each(other_id, function(key, value) {
+				$('#search-select .metro-map .name[data-termin-id="'+value+'"]').toggleClass('active');
+				$('#search-select .metro-map .point[data-termin-id="'+value+'"]').toggleClass('active');
+			});
+		} else {
+			$('#search-select .metro-map .name[data-termin-id="'+id+'"]').toggleClass('active');
+			$('#search-select .metro-map .point[data-termin-id="'+id+'"]').toggleClass('active');
+		}
+		// Отметить в списке
+		if ($(this).hasClass('active')) {
+			$('#search-filter .type-property .metro .input-select select option[value="'+tid+'"]').attr('selected', true);
+		} else {
+			$('#search-filter .type-property .metro .input-select select option[value="'+tid+'"]').attr('selected', false);
+		}
+		// Скрыть или показать fade
+		if ($('#search-select .metro-map .name.active').length > 0) {
+			$('#search-select .metro-map .fade').css('display', 'block');
+		} else {
+			$('#search-select .metro-map .fade').css('display', 'none');
+		}
+		// Количество
+		var count = $('.metro .input-select select:first option:selected').length;
+		if (count == 0) {
+			$('#search-filter .type-property .metro .select-metro').html('Выбрать <span class="icon-plus"></span>');
+		} else {
+			$('#search-filter .type-property .metro .select-metro').html('Выбрано - '+count);
+		}
+		$.fn.vr_filter('counter');
+	});
+	// Очистить
+	$('#search-select').on('click', '.filter-metro-map-settings .line.one .clear', function() {
+		$('#search-filter .type-property .metro .select-metro').html('Выбрать <span class="icon-plus"></span>');
+		$('#search-select .metro-map .name, #search-select .metro-map .point').removeClass('active');
+		$('#search-select .metro-map .fade').css('display', 'none');
+		$('#search-filter .type-property .metro .input-select select option').attr('selected', false);
+		$.fn.vr_filter('counter');
+	});
+	// Выбор ветки
+	$('#search-select').on('click', '.filter-metro-map-settings .line-metro-box ul li', function() {
+		$(this).toggleClass('active');
+		var line = $(this).attr('data-parent');
+		if ($(this).hasClass('active')) {
+			$('#search-select .filter-metro-map div[data-termin-parent="'+line+'"]:not(.no-active)').each(function() {
+				$(this).addClass('addClass');
+				var id = $(this).attr('data-termin-id');
+				var other_id = $(this).attr('data-termin-other');
+				var tid = $(this).attr('data-termin-tid');
+				// Отметить в этой же области
+				if (other_id.length > 0) {
+					other_id = other_id.split(',');
+					$('#search-select .metro-map .name[data-termin-id="'+id+'"]').addClass('active');
+					$('#search-select .metro-map .point[data-termin-id="'+id+'"]').addClass('active');
+					$.each(other_id, function(key, value) {
+						$('#search-select .metro-map .name[data-termin-id="'+value+'"]').addClass('active');
+						$('#search-select .metro-map .point[data-termin-id="'+value+'"]').addClass('active');
+					});
+				} else {
+					$('#search-select .metro-map .name[data-termin-id="'+id+'"]').addClass('active');
+					$('#search-select .metro-map .point[data-termin-id="'+id+'"]').addClass('active');
+				}
+				$('#search-filter .type-property .metro .input-select select option[value="'+tid+'"]').attr('selected', true);
+			});
+		} else {
+			$('#search-select .filter-metro-map div[data-termin-parent="'+line+'"]:not(.no-active)').each(function() {
+				$(this).addClass('addClass');
+				var id = $(this).attr('data-termin-id');
+				var other_id = $(this).attr('data-termin-other');
+				var tid = $(this).attr('data-termin-tid');
+				// Отметить в этой же области
+				if (other_id.length > 0) {
+					other_id = other_id.split(',');
+					$('#search-select .metro-map .name[data-termin-id="'+id+'"]').removeClass('active');
+					$('#search-select .metro-map .point[data-termin-id="'+id+'"]').removeClass('active');
+					$.each(other_id, function(key, value) {
+						$('#search-select .metro-map .name[data-termin-id="'+value+'"]').removeClass('active');
+						$('#search-select .metro-map .point[data-termin-id="'+value+'"]').removeClass('active');
+					});
+				} else {
+					$('#search-select .metro-map .name[data-termin-id="'+id+'"]').removeClass('active');
+					$('#search-select .metro-map .point[data-termin-id="'+id+'"]').removeClass('active');
+				}
+				$('#search-filter .type-property .metro .input-select select option[value="'+tid+'"]').attr('selected', false);
+			});
+		}
+		// Скрыть или показать fade
+		if ($('#search-select .metro-map .name.active').length > 0) {
+			$('#search-select .metro-map .fade').css('display', 'block');
+		} else {
+			$('#search-select .metro-map .fade').css('display', 'none');
+		}
+		// Количество
+		var count = $('.metro .input-select select:first option:selected').length;
+		if (count == 0) {
+			$('#search-filter .type-property .metro .select-metro').html('Выбрать <span class="icon-plus"></span>');
+		} else {
+			$('#search-filter .type-property .metro .select-metro').html('Выбрано - '+count);
+		}
+		$.fn.vr_filter('counter');
+	});
+	$('#search-select').on('click', '.metro-map .name.no-active, #search-select .metro-map .point.no-active', function() {
+		M.toast({'html': '<span class="arert-fav">К сожалению, на этой станции метро у нас нет объектов.</span>', 'outDuration': 3000});
+	});
+	// Скрыть карту (Сохранить)
+	$('#search-select').on('click', '.filter-metro-map-settings .line.one .save', function() {
+		$('#search-select .metro-map').slideUp();
+	});
+	// Полный фильтр
+	$('#search-filter .filter-box').on('click', '.right-box .buttons .more', function() {
+		$('#search-filter .right-box .content-type .type-property .full-options').slideToggle();
+		$(this).hide();
+	});
+	// Сбросить параметры
+	$('#search-filter .right-box').on('click', '.buttons .clear', function() {
+		$('#search-select .line-box .content').html('');
+		$('#search-filter .type-property select option').attr('selected', false);
+		$('#search-filter .type-property input[type=text]').val('');
+		$('#search-filter .select-filter-mini').html('Выбрать <span class="icon-arrow-down"></span>');
+		$('#search-filter .select-filter').html('Выбрать <span class="icon-arrow-down"></span>');
+		$('#search-filter .select-metro').html('Выбрать <span class="icon-plus"></span>');
+		$('#search-select .line-box').addClass('hide');
+		$('#search-select .filter-metro-map').remove();
+		$('#search-select .metro-map').slideUp();
+		$('#search-filter .full-options input').attr('checked', false);
+		$('#search-filter .select-filter-check .item').removeClass('active');
+		$.fn.vr_filter('counter');
+	});
+	$('#search-filter .filter-box').on('click', '.right-box .price .cy-btn div', function() {
+		$.fn.vr_filter('counter');
+	});
+	if ($('#search-filter .buttons .count').length > '0') {
+		$.fn.vr_filter('counter');
+	}
+	// Pager
+	$('.page-filter2 .pager').on('click', 'li:not(.pager-item) a', function() {
+		if (!$(this).parent().hasClass('active')) {
+			// определяем номер страницы
+			var page = $(this).attr('data-page');
+			// подставляем этот номер
+			$('#search-filter form input[name="page"]').val(page);
+			// Обработка всей формы
+			var data = $('#search-filter form').serialize().replace(/[^&]+=\.?(?:&|$)/g, '').replace(/&$/, '');
+			// Изменение url
+			if (data) var url = window.location.pathname+'?'+data;
+			else var url = window.location.pathname;
+			window.history.replaceState({}, '', url);
+			// Обработка всей формы
+			var data = $('#search-filter form').serializeArray().filter(function(k) { return $.trim(k.value) != "";});
+			// анимированно переключаемся вверх
+			$('body, html').animate({scrollTop: 620}, 800, 'swing');
+			// выполняем обновление контента
+			var info = {
+				'type': 'main-filter',
+				'subtype': 'pager',
+				'values': data
+			}
+			$('.pager').hide();
+			$('#two-box .property-box-all').html('<div class="load"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div>');
+			$.ajax({
+				url: '/system/ajax-option',
+				type: 'post',
+				data: 'data=' + $.toJSON(info),
+	 			success: function(data) {
+	 				// console.log(data);
+	 				$('.box-termin-informer .sum .show').html(data['show']);
+	 				$('.property-box-all').html(data['content']);
+	 				$('.pager').html(data['pager']).show();
+	 			}
+	 		});
+		}
+		return false;
+	});
+	// sort
+	$('.page-filter2 .sort-filter-termin ul').on('click', 'li', function() {
+		if (!$(this).hasClass('active')) {
+			$('.page-filter2 .sort-filter-termin ul.options li.active').removeClass('active');
+			$(this).addClass('active');
+		}
+		var order = $(this).attr('data-order');
+		var sort = $(this).attr('data-sort');
+		// подставляем этот номер
+		$('#search-filter form input[name="page"]').val('');
+		$('#search-filter form input[name="order"]').val(order);
+		$('#search-filter form input[name="sort"]').val(sort);
+		// Обработка всей формы
+		var data = $('#search-filter form').serialize().replace(/[^&]+=\.?(?:&|$)/g, '').replace(/&$/, '');
+		// Изменение url
+		if (data) var url = window.location.pathname+'?'+data;
+		else var url = window.location.pathname;
+		window.history.replaceState({}, '', url);
+		// Обработка всей формы
+		var data = $('#search-filter form').serializeArray().filter(function(k) { return $.trim(k.value) != "";});
+		// анимированно переключаемся вверх
+		$('body, html').animate({scrollTop: 620}, 800, 'swing');
+		// выполняем обновление контента
+		var info = {
+			'type': 'main-filter',
+			'subtype': 'sort',
+			'values': data
+		}
+		$('.pager').hide();
+		$('#two-box .property-box-all').html('<div class="load"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div>');
+		$.ajax({
+			url: '/system/ajax-option',
+			type: 'post',
+			data: 'data=' + $.toJSON(info),
+	 		success: function(data) {
+	 			$('.box-termin-informer .sum .show').html(data['show']);
+	 			$('.property-box-all').html(data['content']);
+	 			$('.pager').html(data['pager']).show();
+	 		}
+	 	});
+		// меняем параметр сортировки на противоположный
+		if (order == 'asc') $(this).attr('data-order', 'desc');
+		else if (order == 'desc') $(this).attr('data-order', 'asc');
+
+	});
+	// limit
+	$('.sort-filter-termin .pages-out select').on('change', function() {
+		var limit = $(this).val();
+		// подставляем этот номер
+		$('#search-filter form input[name="page"]').val('');
+		$('#search-filter form input[name="limit"]').val(limit);
+		// Обработка всей формы
+		var data = $('#search-filter form').serialize().replace(/[^&]+=\.?(?:&|$)/g, '').replace(/&$/, '');
+		// Изменение url
+		if (data) var url = window.location.pathname+'?'+data;
+		else var url = window.location.pathname;
+		window.history.replaceState({}, '', url);
+		// Обработка всей формы
+		var data = $('#search-filter form').serializeArray().filter(function(k) { return $.trim(k.value) != "";});
+		// анимированно переключаемся вверх
+		$('body, html').animate({scrollTop: 620}, 800, 'swing');
+		// выполняем обновление контента
+		var info = {
+			'type': 'main-filter',
+			'subtype': 'limit',
+			'values': data
+		}
+		$('.pager').hide();
+		$('#two-box .property-box-all').html('<div class="load"><div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div></div>');
+		$.ajax({
+			url: '/system/ajax-option',
+			type: 'post',
+			data: 'data=' + $.toJSON(info),
+	 		success: function(data) {
+	 			$('.box-termin-informer .sum .show').html(data['show']);
+	 			$('.property-box-all').html(data['content']);
+	 			$('.pager').html(data['pager']).show();
+	 		}
+	 	});
+	});
+
+	/*
+	// ajax sort
+	$('.logged-in.page-filter #wrap-page').on('click', '.sort-filter-termin ul.options li a', function() {
+		var url = $(this).attr('href').substr(1);
+		var info = {
+			'type': 'filter-sort',
+			'params': url.split('?')[1].split('&')
+		};
+		$.ajax({
+			url: '/system/ajax-option',
+			type: 'post',
+			data: 'data=' + $.toJSON(info),
+			success: function(data) {
+				console.log(data);
+				//$('#block-system-main').html(data);
+			}
+		});
+		return false;
+	});
+	*/
+	
+
+});
+})(jQuery);

@@ -1,0 +1,664 @@
+(function($) {
+$(document).ready(function() {
+
+// new
+if ($('.boxSlider').length) {
+  var slider = tns({
+    startIndex: 1,
+    container: '.boxSlider',
+    items: 1,
+    gutter: 4,
+    center: true,
+    nav: false,
+    fixedWidth: 864,
+    prevButton: '.boxOverlay__prev',
+    nextButton: '.boxOverlay__next',
+    mouseDrag: true,
+  });
+};
+if ($('.km5').length) {
+  var km5 = tns({
+    container: '.km5',
+    fixedWidth: 304,
+    items: 3.5,
+    gutter: 32,
+    nav: false,
+    prevButton: '.around__prev',
+    nextButton: '.around__next',
+    mouseDrag: true,
+  });
+};
+if ($('.km10').length) {
+  var km10 = tns({
+    container: '.km10',
+    fixedWidth: 304,
+    items: 3.5,
+    gutter: 32,
+    nav: false,
+    prevButton: '.around__prev',
+    nextButton: '.around__next',
+    mouseDrag: true,
+  });
+};
+if ($('.km15').length) {
+  var km15 = tns({
+    container: '.km15',
+    fixedWidth: 304,
+    items: 3.5,
+    gutter: 32,
+    nav: false,
+    prevButton: '.around__prev',
+    nextButton: '.around__next',
+    mouseDrag: true,
+  });
+};
+if ($('.km20').length) {
+  var km20 = tns({
+    container: '.km20',
+    fixedWidth: 304,
+    items: 3.5,
+    gutter: 32,
+    nav: false,
+    prevButton: '.around__prev',
+    nextButton: '.around__next',
+    mouseDrag: true,
+  });
+};
+if ($('.km25').length) {
+  var km25 = tns({
+    container: '.km25',
+    fixedWidth: 304,
+    items: 3.5,
+    gutter: 32,
+    nav: false,
+    prevButton: '.around__prev',
+    nextButton: '.around__next',
+    mouseDrag: true,
+  });
+};
+if ($('.km30').length) {
+  var km30 = tns({
+    container: '.km30',
+    fixedWidth: 304,
+    items: 3.5,
+    gutter: 32,
+    nav: false,
+    prevButton: '.around__prev',
+    nextButton: '.around__next',
+    mouseDrag: true,
+  });
+};
+if ($('.object__sliderInner').length) {
+  [].forEach.call(document.querySelectorAll('.object__sliderInner'), function (el) {
+    tns({
+      container: el,
+      items: 1,
+      nav: true,
+      nested: 'outer',
+      controls: false,
+    });
+  });
+};
+if ($('.villageSlider').length) {
+  var villageSlider = tns({
+    container: '.villageSlider',
+    fixedWidth: 304,
+    items: 3.5,
+    gutter: 32,
+    nav: false,
+    prevButton: '.object__prev',
+    nextButton: '.object__next',
+    nested: 'inner',
+    mouseDrag: true,
+  });
+};
+if ($('.similarSlider').length) {
+  var similarSlider = tns({
+    container: '.similarSlider',
+    fixedWidth: 304,
+    items: 3.5,
+    gutter: 32,
+    nav: false,
+    prevButton: '.object__prev',
+    nextButton: '.object__next',
+    nested: 'inner',
+    mouseDrag: true,
+  });
+};
+if ($('.aroundSlider').length) {
+  var aroundSlider = tns({
+    container: '.aroundSlider',
+    fixedWidth: 304,
+    items: 3.5,
+    gutter: 32,
+    nav: false,
+    prevButton: '.object__prev',
+    nextButton: '.object__next',
+    nested: 'inner',
+    mouseDrag: true,
+  });
+};
+
+$('.broker__unhide').on('click tap', function () {
+  $(this).hide();
+});
+$('.accardion__btn').on('click tap', function () {
+  $(this).toggleClass('accardion__btn-rotate');
+  $('.accardion__body').slideToggle();
+});
+$('.object__tab').on('click tap', function (e) {
+  e.preventDefault();
+  let tab = $(this).attr('href').slice(1);
+  $('.object__slider').removeClass('object__slider-active');
+  $(this).parents().find('.' + tab).addClass('object__slider-active');
+  eval(tab).goTo(0);
+});
+$('.around__tab').on('click tap', function (e) {
+  e.preventDefault();
+  $('.around__tab').removeClass('around__tab-active');
+  $(this).addClass('around__tab-active');
+  let tab = $(this).attr('href').slice(1);
+  $('.around__slider').removeClass('around__slider-active');
+  $(this).parents().find('.' + tab).addClass('around__slider-active');
+  eval(tab).goTo(0);
+});
+$('.sidebarMenu__item').on('click tap', function (e) {
+  e.preventDefault();
+  $(this).parent().children().removeClass('sidebarMenu__item-active');
+  $(this).addClass('sidebarMenu__item-active');
+  let tab = $(this).attr('href');
+  $(this).parent().parent().children().removeClass('siderbarTab-active');
+  $(this).parent().parent().find(tab).addClass('siderbarTab-active');
+});
+$('.w-unhide').on('click tap', function (e) {
+  e.preventDefault();
+  let unhide = $(this).attr('href');
+  $(this).parents().find(unhide).slideToggle();
+  if ($(this).text() == 'Показать подробности') {
+    $(this).text('Скрыть подробности');
+  } else {
+    $(this).text('Показать подробности');
+  }
+  $(this).parent().find('#w-arrow').toggleClass('w-rotate');
+});
+$('.p-unhide').on('click tap', function (e) {
+  e.preventDefault();
+  let unhide = $(this).attr('href');
+  $(this).parents().find(unhide).slideToggle();
+  if ($(this).text() == 'Посмотреть все') {
+    $(this).text('Скрыть все');
+  } else {
+    $(this).text('Посмотреть все');
+  }
+  $(this).parent().find('#w-arrow').toggleClass('w-rotate');
+});
+$('.layout__zoomIn').lightGallery();
+$('.boxSlider').lightGallery();
+
+
+
+if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+	if (!$.cookie('contact')) {
+		setTimeout(function() {
+			$('#modal-contact-block').animate({bottom: '23px'});
+		}, 5000);
+		setTimeout(function() {
+			if (!$('#modal-contact-block').hasClass('opencheck')) {
+				$('#modal-contact-block .close').click();
+				$.cookie('contact', 'hide', { expires: 365, path: '/' });
+			}
+		}, 12000);
+	}
+	window.onUsersnapLoad = function(api) {
+	    api.init({
+	      additionalLocales: ['ru'],
+	      locale: 'auto',
+	      button: {
+	      	icon: 'null',
+			label: 'Сообщить об ошибке',
+	    	position: 'rightCenter',       
+	      },
+	      translations: {
+	        ru: {
+	          'submitButton': 'Отправить!',
+	          'AnnotationTools:comment': 'Данные',
+	          'AnnotationTools:pen': 'Отметить',
+	          'AnnotationTools:arrow': 'Стрелкой',
+	          'AnnotationTools:blackout': 'Закрасить',
+	          'AnnotationTools:collapseColors': 'Цвет',
+	          'annotationCanvasHeader': 'Сообщите о найденной ошибке/недочете',
+	          'backButton': 'Назад',
+	          'closeButton': 'Закрыть',
+	          'titleFieldLabel': 'Заголовок',
+	          'commentFieldLabel': 'Ваше сообщение',
+	          'labelFieldLabel': 'Тип',
+	          'emailFieldLabel': 'Email',
+	          'screenshotFieldLabel': 'Добавить скриншот',
+	          'thankYou': 'Спасибо',
+	          'usersnapIconAlt': 'UserSnap',
+	          'FloatingCommentField:placeholder': 'Введите сообщение',
+	          'ConfirmDialog:title': 'Подтверждение',
+	          'ConfirmDialog:message': 'Вы уверены, что хотите закрыть?',
+	          'ConfirmDialog:stay': 'Отменить',
+	          'ConfirmDialog:leave': 'Закрыть',
+	          'WidgetBody:poweredBy': '',
+	          'HeaderImageDisplay:poweredBy': ''
+
+	        }
+	      }
+	    });
+	    window.Usersnap = api;
+	  }
+	  var script = document.createElement('script');
+	  script.async = 1;
+	  script.src = 'https://api.usersnap.com/load/72a7e6c9-61ad-4f8c-a144-252a4e1b54bc.js?onload=onUsersnapLoad';
+	  document.getElementsByTagName('head')[0].appendChild(script);
+
+	// scroll new header
+	$(window).scroll(function() {
+		var top = $(this).scrollTop();
+		// nav
+		if (top > 44 && $(window).height() > 600 && $('#wrap-page').height() > 800) {
+			$('.headerBottom').addClass('fixed');
+		} else {
+			$('.headerBottom').removeClass('fixed');
+		}
+	});
+
+} else {
+	window.onUsersnapLoad = function(api) {
+		    api.init({
+		      additionalLocales: ['ru'],
+		      locale: 'auto',
+		      button: null,
+		      translations: {
+		        ru: {
+		          'submitButton': 'Отправить!',
+		          'AnnotationTools:comment': 'Данные',
+		          'AnnotationTools:pen': 'Отметить',
+		          'AnnotationTools:arrow': 'Стрелкой',
+		          'AnnotationTools:blackout': 'Закрасить',
+		          'AnnotationTools:collapseColors': 'Цвет',
+		          'annotationCanvasHeader': 'Сообщите о найденной ошибке/недочете',
+		          'backButton': 'Назад',
+		          'closeButton': 'Закрыть',
+		          'titleFieldLabel': 'Заголовок',
+		          'commentFieldLabel': 'Ваше сообщение',
+		          'labelFieldLabel': 'Тип',
+		          'emailFieldLabel': 'Email',
+		          'screenshotFieldLabel': 'Добавить скриншот',
+		          'thankYou': 'Спасибо',
+		          'usersnapIconAlt': 'UserSnap',
+		          'FloatingCommentField:placeholder': 'Введите сообщение',
+		          'ConfirmDialog:title': 'Подтверждение',
+		          'ConfirmDialog:message': 'Вы уверены, что хотите закрыть?',
+		          'ConfirmDialog:stay': 'Отменить',
+		          'ConfirmDialog:leave': 'Закрыть',
+		          'WidgetBody:poweredBy': '',
+		          'HeaderImageDisplay:poweredBy': '',
+		          'CommentToolDialog:title': 'Ваше сообщение',
+		          'CommentToolDialog:delete': 'Отменить',
+		          'CommentToolDialog:close': 'Сохранить',
+		          'CommentToolDialog:placeholder': 'Текст замечания'
+		        }
+		      }
+		    });
+		    api.on('close', function(event) {
+		    	$('.usersnap').removeClass('loading');
+		    });
+		    window.Usersnap = api;
+		}
+		var script = document.createElement('script');
+		script.async = 0;
+		script.className = 'usersnapscript';
+	script.src = '//api.usersnap.com/load/72a7e6c9-61ad-4f8c-a144-252a4e1b54bc.js?onload=onUsersnapLoad';
+	document.getElementsByTagName('head')[0].appendChild(script);
+}
+$('#informer').on('click', '.usersnap:not(.loading)', function() {
+	$(this).addClass('loading');
+	console.log('1');
+	setTimeout(function() { window.Usersnap.open(); }, 2250);
+});
+
+
+$('#modal-contact-block .phone-block .msg a.tg').on('click', function() {
+	yaCounter15829528.reachGoal('tg-click');
+});
+$('#modal-contact-block .phone-block .msg a.wa').on('click', function() {
+	yaCounter15829528.reachGoal('wa-click');
+});
+// Mobile menu
+$('#topbar').on('click', '.mobile_m:not(.open-search):not(.open-sidebar):not(.overflow-search)', function() {
+	$('body').toggleClass('open-menu');
+});
+// Mobile Filter
+$('.mobile-filter').on('click', function() {
+	$('body').toggleClass('open-filter-termin');
+});
+$('#block-sections-termin-block').on('click', function(event) {
+	if ($(event.target).hasClass('block-content')) {
+		$('body').removeClass('open-filter-termin');
+	}
+});
+// Search
+$('#topbar').on('click', '.mobile_s, .mobile_m.open-search', function() {
+	if ($('body').hasClass('open-search')) {
+		$('body').removeClass('open-search');
+		$('.mobile_m').removeClass('open-search');
+	} else {
+		$('body').addClass('open-search');
+		$('.mobile_m').addClass('open-search');
+	}
+});
+$('#topbar').on('click', '.mobile_p', function() {
+	$('#topbar .time-job span').click();
+	$('body').toggleClass('open-menu');
+});
+// Mobile
+$('.node-property .main-content .center-box .box-description').on('click', '.more-load-desc', function() {
+	if ($('.node-property .main-content .center-box .box-description').hasClass('full')) {
+		$('.node-property .main-content .center-box .box-description').removeClass('full');
+		$(this).html('Читать полное описание');
+	} else {
+		$('.node-property .main-content .center-box .box-description').addClass('full');
+		$(this).html('Скрыть полное описание');
+	}
+});
+// tags
+if ($('.node-property .main-content.tags ul').length > 0) {
+	if ($('.node-property .main-content.tags ul li').length > 3) {
+		$('.node-property .main-content.tags .box-tags').append('<span class="more-load-tags hide">Показать все теги</span>');
+	}
+	$('.node-property .main-content.tags').on('click', '.more-load-tags', function() {
+		if ($('.node-property .main-content.tags').hasClass('full')) {
+			$('.node-property .main-content.tags').removeClass('full');
+			$(this).html('Показать все теги');
+		} else {
+			$('.node-property .main-content.tags').addClass('full');
+			$(this).html('Скрыть полный список');
+		}
+	});
+}
+// phone show
+$('.node-property .main-content .right-box > .phone, #topbar .time-job, .headerBottom__call').on('click', function() {
+	$('body').addClass('show-number');
+	var nid = null;
+	if ($('.node-property').length > 0) nid = $('.node-property').data('nid');
+	yaCounter15829528.reachGoal('show-phone', {'nid': nid});
+});
+
+
+// modal
+$('.modal').modal();
+var hash = location.hash.slice(1);
+if (hash == 'callback') {
+	// callback
+	$('.modal#back-call').modal('open');
+	var url = new URLSearchParams(window.location.search);
+	var phone = $.trim(url.get('phone'));
+	$('#back-call input[name="submitted[phone]"]').val(phone).parent().prepend('<div class="phone-hide hide">'+phone+'</div>');
+	$('#back-call input[name="submitted[name]"]').val(url.get('name'));
+	$('#back-call input[name="submitted[subject]"]').val(url.get('tema'));
+	// Департамент
+	var dep = url.get('dep');
+	if (dep == 'SUBURB') $('input[name="submitted[departament]"][value="Загород"]').prop('checked', true);
+	else $('input[name="submitted[departament]"][value="Город"]').prop('checked', true);
+
+	setTimeout(function() {
+		$('.phone-hide').mask('+9 (999) 999-99-99');
+		$('#back-call input[name="submitted[phone]"]').val($('.phone-hide').text());
+	}, 10);
+
+} else if (hash == 'view') {
+	// view
+	$('.modal#order-view-block').modal('open');
+	var url = new URLSearchParams(window.location.search);
+	var phone = $.trim(url.get('phone'));
+	$('#order-view-block input[name="submitted[phone]"]').val(phone).parent().prepend('<div class="phone-hide hide">'+phone+'</div>');
+	$('#order-view-block input[name="submitted[name]"]').val(url.get('name'));
+	$('#order-view-block input[name="submitted[email]"]').val(url.get('email'));
+
+	setTimeout(function() {
+		$('.phone-hide').mask('+9 (999) 999-99-99');
+		$('#back-call input[name="submitted[phone]"]').val($('.phone-hide').text());
+	}, 10);
+} else if (hash == 'expert') {
+	// view
+	$('#modal-contact-block').addClass('opencheck').css('bottom', '23px');
+	var url = new URLSearchParams(window.location.search);
+	var phone = $.trim(url.get('phone'));
+	$('#modal-contact-block input[name="submitted[phone]"]').val(phone).parent().prepend('<div class="phone-hide hide">'+phone+'</div>');
+	setTimeout(function() {
+		$('.phone-hide').mask('+9 (999) 999-99-99');
+		$('#modal-contact-block input[name="submitted[phone]"]').val($('.phone-hide').text());
+	}, 10);
+}
+
+$('#search-filter .number-lot input[type=text]').mask('99999');
+// Открыть фильтр
+$('#search-filter.filter-mini-open .full-size-filter').on('click', function() {
+	// смена главного класса
+	var filter = $('#search-filter');
+	// загрузка фильтра, если его ещё нет
+	if (filter.find('.filter-box form').length == 0) {
+		var info = {'type': 'load-filter'};
+		filter.find('.filter-box').html('<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>');
+		$.ajax({
+			url: '/system/termin',
+			type: 'post',
+			data: 'data=' + $.toJSON(info),
+			success: function(data) {
+				filter.find('.filter-box').html(data);
+				$.fn.vr_filter('counter');
+			}
+		});
+	}
+	if (filter.hasClass('filter-mini-open')) {
+		// разбор классов
+		filter.removeClass('filter-mini-open').addClass('full-size');
+	} else if (filter.hasClass('full-size')) {
+		// разбор классов
+		filter.addClass('filter-mini-open').removeClass('full-size');
+	}
+});
+// Ширина блока с блогом
+if ($('#wrap-page #two-box .blog-last-post').length > 0) {
+	var height = $('#wrap-page #two-box .blog-last-post .content .two-box').height();
+	$('#wrap-page #two-box .blog-last-post .content .one-box').css('height', height);
+}
+// tour
+if ($('.node-property.poselok .main-content .right-box').length > 0 && $('.node-property .main-content .right-box .tour-3d').length > 0) {
+	var height = $('.node-property.poselok .main-content .right-box').height();
+	if (height < 575) {
+		$('.node-property .main-content .right-box .tour-3d').css('margin-top', 575-height+19);
+	}
+}
+// Ширина pager
+if ($('.item-list ul.pager').length > 0) {
+	$('.item-list ul.pager').css('width', $('.item-list ul.pager li').length*30+'px');
+}
+// Район (КП)
+if ($('.node-property .main-content .right-box .combo-box .box-content .line.district .content').length > 0) {
+	var district_width = $('.node-property .main-content .right-box .combo-box .box-content .line.district .content').width();
+	if (district_width > 230) {
+		$('.node-property .main-content .right-box .combo-box .box-content .line.district .content').css('font-size', '14px');
+	};
+}
+// Район КП
+if ($('#wrap-page #two-box .line-property .info a div.address').length > 0) {
+	district_width = $('#wrap-page #two-box .line-property .info a div.address').width();
+	if (district_width > 250) {
+		$('#wrap-page #two-box .line-property .info a div.address').css('font-size', '13px');
+	};
+}
+// Содержимое строки
+if ($('.node-property .main-content .right-box .combo-box .box-content .line').length > 0) {
+	$('.node-property .main-content .right-box .combo-box .box-content .line').each(function() {
+		var box_content_width = $(this).find('.content').width();
+		if (box_content_width > 220) {
+			$(this).find('.content').css('font-size', '14px');
+		}
+		box_content_width = $(this).find('.content').width();
+		if (box_content_width > 220) {
+			$(this).find('.content').css('font-size', '13px');
+		} 
+	});
+}
+
+// jk
+if ($('.property-box-info .left-box-property .info .line .content').length > 0) {
+	$('.property-box-info .left-box-property .info .line .content').each(function() {
+		var box_content_width = $(this).width();
+		if (box_content_width > 280) {
+			$(this).css('font-size', '14px');
+		}
+		box_content_width = $(this).width();
+		if (box_content_width > 280) {
+			$(this).css('font-size', '13px');
+		}
+		box_content_width = $(this).width();
+		if (box_content_width > 280) {
+			$(this).css('font-size', '12px');
+		}
+	});
+}
+// Блок с шоссе
+$('.block-out-number .line-box, .box-popular.highway .line-box').on('click', function() {
+	var link = $(this).children('a').attr('href');
+	document.location.href = link;
+});
+// Полный список в шоссе
+$('aside .block-out-number .more-list span, .box-popular .box-content .line-all').on('click', function() {
+	$(this).parent().parent().find('.other-list').slideToggle();
+	$(this).toggleClass('show');
+	return false;
+});
+// Переключение вкладок с контентом
+if ($('.tabs-main-content .center-box .tabs-box .tabs-title div').length > 0) {
+	var width = 100/$('.tabs-main-content .center-box .tabs-box .tabs-title div').length;
+	$('.tabs-main-content .center-box .tabs-box .tabs-title div').css("width", width+'%');
+};
+// Купить в этом поселке
+if ($('.main-content .right-box .box-buy-property .tabs-box .tabs-title div').length > 0) {
+	var width = 100/$('.main-content .right-box .box-buy-property .tabs-box .tabs-title div').length;
+	$('.main-content .right-box .box-buy-property .tabs-box .tabs-title div').css("width", width+'%');
+}
+// Рекомендуемые объекты
+if ($('.box-recommend .tabs-box .tabs-title div').length > 0) {
+	var width = 100/$('.box-recommend .tabs-box .tabs-title div').length;
+	$('.box-recommend .tabs-box .tabs-title div').css("width", width+'%');
+}
+// Вкладки блога
+if ($('#wrap-page #two-box .blog-last-post').length > 0) {
+	$('#wrap-page #two-box .blog-last-post .content .two-box .line-title').each(function() {
+		var height = $(this).height()+30;
+		if (height == 50) {
+			$(this).addClass('small')
+		}
+	});	
+}
+// Купить объект в этом поселке
+if ($('.node-property .main-content .right-box .box-buy-property').length > 0) {
+	if (!$('.main-content .right-box .box-buy-property .tabs-box .tabs-title div').hasClass('active')) {
+		$('.main-content .right-box .box-buy-property .tabs-box .tabs-title div:first-child').addClass('active');
+		var box = $('.main-content .right-box .box-buy-property .tabs-box .tabs-title div:first-child').attr('data-type-buy-property');
+		$('.main-content .right-box .box-buy-property .tabs-box .tabs-content div[data-type-buy-property="'+box+'"]').addClass('active');
+	}
+}
+// Закрытие всего при esc
+$(document).on('keydown', '.select-container-modal, .overflow-modal, .qr-code-modal', function(e) {
+	if (e.keyCode === 27) {
+		if ($('#select-container').length > 0) {
+			$('#select-container').fadeOut().delay(1000).remove();
+			$('body').removeClass('select-container-modal');
+		}
+		if ($('.form-modal-block').length > 0) {
+			$('.form-modal-block').fadeOut();
+			$('body').removeClass('overflow-modal');
+		}
+		if ($('.qr-box')) {
+			$('.qr-box').fadeOut();
+			$('body').removeClass('qr-code-modal');
+		}
+		return false;
+    }
+});
+// slider
+$('#gallery-property').each(function() {
+	$(this).owlCarousel({
+		loop: true,
+		nav: true,
+		items: 1,
+		margin: 0,
+		slideBy: 1,
+		dots: false,
+		autoWidth: true,
+		center: true,
+		margin: 2
+	});
+});
+
+if (!$.browser['mobile']) {
+	$('.front-property-block-owl:not(.complex)').each(function() {
+		$(this).owlCarousel({
+		    loop: true,
+		    nav: true,
+		    items: 3,
+		    margin: 15,
+		    slideBy: 1,
+		    autoWidth: true,
+		    dots: false,
+            lazyLoad: true
+		});
+	});
+	$('.front-property-block-owl.complex').each(function() {
+		$(this).owlCarousel({
+		    loop: true,
+		    nav: true,
+		    items: 4,
+		    margin: 15,
+		    slideBy: 1,
+		    autoWidth: true,
+		    dots: false,
+            lazyLoad: true
+		});
+	});
+} else {
+	$('.front-property-block-owl.complex').each(function() {
+		$(this).owlCarousel({
+		    loop: true,
+		    nav: true,
+		    items: 1,
+		    margin: 15,
+		    slideBy: 1,
+		    autoWidth: true,
+		    dots: false,
+            lazyLoad: true
+		});
+	});
+	$('.front-property-block-owl').owlCarousel({
+		    loop: true,
+		    nav: true,
+		    items: 3,
+		    margin: 0,
+		    slideBy: 1,
+		    autoWidth: true,
+		    dots: false,
+        	lazyLoad: true
+	});
+}
+// tabs
+$('ul.tabs').tabs();
+// Название жк/кп
+if ($('.page-node').length > 0 && $('.page-node h1[data-title]').length > 0) {
+	var title = $('.page-node h1').data('title');
+	// На просмотр
+	$('#order-view-block .modal-title').html($('#order-view-block .modal-title').text()+' <br />в '+title);
+	// Прайс
+	$('#order-price .modal-title').html($('#order-price .modal-title').text()+' <br />'+title);
+	// Задать вопрос
+	$('#qu-block .modal-title').html($('#qu-block .modal-title').text()+' <br />о '+title);
+}
+
+});
+})(jQuery);
