@@ -14,10 +14,6 @@
     transform: rotate(-45deg);
     margin-top: -2px;
   }
-  body.overflow-search .headerBottom .w-page {
-    z-index: 101;
-    background: #000000CC;
-  }
   body .headerBottom .btn {
     position: absolute;
     top: 20px;
