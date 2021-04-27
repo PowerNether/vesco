@@ -1,3 +1,36 @@
+.layout
+    width: 1312px
+.front-termin-block .termin-block
+    background: url(.././img/sliderItem1.png) center no-repeat
+    background-size: cover
+.front-termin-block .termin-block.complex
+    background: url(.././img/1613387177_24.jpg) center no-repeat
+    background-size: cover
+.front-termin-block .termin-block.flats
+    background: url(.././img/id6a8782_2_enf.jpg) center no-repeat
+    background-size: cover
+.front-termin-block .termin-block > a
+    width: 646px
+#wrap-page.front #two-box
+    width: 1312px
+#wrap-page #two-box .blog-last-post .content .one-box
+    width: 663px
+#search-filter .right-box
+    width: 1040px
+#search-filter .left-box
+    width: 257px
+#search-filter input[type=text]
+    width: 100%
+
+.object-sidebarMenu
+    display: flex
+    align-items: center
+    .sidebarMenu__item
+        margin: 0 15px 0 0
+        line-height: 38px
+    .siderbarTab-active
+        display: block
+
 .object
     margin-bottom: 50px
     width: 100%
@@ -9,12 +42,6 @@
     align-items: stretch
     position: relative
 
-    & .sidebarMenu
-        height: 100%
-
-    & .siderbarTab-active
-        display: block
-
     &__controls
         display: -webkit-box
         display: -ms-flexbox
@@ -22,9 +49,9 @@
         -webkit-box-align: center
         -ms-flex-align: center
         align-items: center
-        position: absolute
-        bottom: 0
-        left: 0
+        margin: 0
+        // position: absolute
+        // right: 0
 
     &__prev
         cursor: pointer
@@ -75,20 +102,21 @@
         transform: rotate(180deg)
 
     &__elem
-        width: 85%
+        width: 100%
         height: 100%
         position: relative
 
     &__elem::after
         content: ''
         position: absolute
-        width: 13%
+        width: 20%
         top: 0
         right: 0
         bottom: 0
         background: -webkit-gradient(linear, left bottom, left top, from(rgba(255, 255, 255, 0.6)), to(rgba(255, 255, 255, 0.6)))
         background: -o-linear-gradient(bottom, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6))
         background: linear-gradient(0deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6))
+        background: none
 
     &__slider
         width: 100%

@@ -41,7 +41,7 @@ if ($('.cottegesSlider').length) {
     var cottegesSlider = tns({
         container: '.cottegesSlider',
         fixedWidth: 304,
-        items: 3.5,
+        items: 4,
         gutter: 32,
         nav: false,
         prevButton: '.cotteges__prev',
@@ -54,7 +54,7 @@ if ($('.apartmentsSlider').length) {
     var apartmentsSlider = tns({
         container: '.apartmentsSlider',
         fixedWidth: 304,
-        items: 3.5,
+        items: 4,
         gutter: 32,
         nav: false,
         prevButton: '.apartments__prev',
@@ -67,7 +67,7 @@ if ($('.cottegeSliderLast').length) {
     var cottegesSlider = tns({
         container: '.cottegeSliderLast',
         fixedWidth: 304,
-        items: 3.5,
+        items: 4,
         gutter: 32,
         nav: false,
         prevButton: '.last__prev',
@@ -80,7 +80,7 @@ if ($('.apartmentSliderLast').length) {
     var cottegesSlider = tns({
         container: '.apartmentSliderLast',
         fixedWidth: 304,
-        items: 3.5,
+        items: 4,
         gutter: 32,
         nav: false,
         prevButton: '.last__prev',
@@ -93,7 +93,7 @@ if ($('.taunhouseSliderLast').length) {
     var cottegesSlider = tns({
         container: '.taunhouseSliderLast',
         fixedWidth: 304,
-        items: 3.5,
+        items: 4,
         gutter: 32,
         nav: false,
         prevButton: '.last__prev',
@@ -106,7 +106,7 @@ if ($('.flatSliderLast').length) {
     var cottegesSlider = tns({
         container: '.flatSliderLast',
         fixedWidth: 304,
-        items: 3.5,
+        items: 4,
         gutter: 32,
         nav: false,
         prevButton: '.last__prev',
@@ -119,7 +119,7 @@ if ($('.villagesSliderNew').length) {
     var cottegesSlider = tns({
         container: '.villagesSliderNew',
         fixedWidth: 304,
-        items: 3.5,
+        items: 4,
         gutter: 32,
         nav: false,
         prevButton: '.new__prev',
@@ -132,7 +132,7 @@ if ($('.complexesSliderNew').length) {
     var cottegesSlider = tns({
         container: '.complexesSliderNew',
         fixedWidth: 304,
-        items: 3.5,
+        items: 4,
         gutter: 32,
         nav: false,
         prevButton: '.new__prev',
