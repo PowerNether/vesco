@@ -36,3 +36,30 @@ $(document).on('click', '.mobile_p', function () {
         $('body').toggleClass('open-menu');
     }
 });
+
+if ($('.cottegesSlider').length) {
+    var cottegesSlider = tns({
+        container: '.cottegesSlider',
+        fixedWidth: 304,
+        items: 3.5,
+        gutter: 32,
+        nav: false,
+        prevButton: '.cotteges__prev',
+        nextButton: '.cotteges__next',
+        nested: 'inner',
+        mouseDrag: true,
+    });
+};
+if ($('.apartmentsSlider').length) {
+    var apartmentsSlider = tns({
+        container: '.apartmentsSlider',
+        fixedWidth: 304,
+        items: 3.5,
+        gutter: 32,
+        nav: false,
+        prevButton: '.apartments__prev',
+        nextButton: '.apartments__next',
+        nested: 'inner',
+        mouseDrag: true,
+    });
+};
