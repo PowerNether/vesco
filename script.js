@@ -63,3 +63,81 @@ if ($('.apartmentsSlider').length) {
         mouseDrag: true,
     });
 };
+if ($('.cottegeSliderLast').length) {
+    var cottegesSlider = tns({
+        container: '.cottegeSliderLast',
+        fixedWidth: 304,
+        items: 3.5,
+        gutter: 32,
+        nav: false,
+        prevButton: '.last__prev',
+        nextButton: '.last__next',
+        nested: 'inner',
+        mouseDrag: true,
+    });
+};
+if ($('.apartmentSliderLast').length) {
+    var cottegesSlider = tns({
+        container: '.apartmentSliderLast',
+        fixedWidth: 304,
+        items: 3.5,
+        gutter: 32,
+        nav: false,
+        prevButton: '.last__prev',
+        nextButton: '.last__next',
+        nested: 'inner',
+        mouseDrag: true,
+    });
+};
+if ($('.taunhouseSliderLast').length) {
+    var cottegesSlider = tns({
+        container: '.taunhouseSliderLast',
+        fixedWidth: 304,
+        items: 3.5,
+        gutter: 32,
+        nav: false,
+        prevButton: '.last__prev',
+        nextButton: '.last__next',
+        nested: 'inner',
+        mouseDrag: true,
+    });
+};
+if ($('.flatSliderLast').length) {
+    var cottegesSlider = tns({
+        container: '.flatSliderLast',
+        fixedWidth: 304,
+        items: 3.5,
+        gutter: 32,
+        nav: false,
+        prevButton: '.last__prev',
+        nextButton: '.last__next',
+        nested: 'inner',
+        mouseDrag: true,
+    });
+};
+if ($('.villagesSliderNew').length) {
+    var cottegesSlider = tns({
+        container: '.villagesSliderNew',
+        fixedWidth: 304,
+        items: 3.5,
+        gutter: 32,
+        nav: false,
+        prevButton: '.new__prev',
+        nextButton: '.new__next',
+        nested: 'inner',
+        mouseDrag: true,
+    });
+};
+if ($('.complexesSliderNew').length) {
+    var cottegesSlider = tns({
+        container: '.complexesSliderNew',
+        fixedWidth: 304,
+        items: 3.5,
+        gutter: 32,
+        nav: false,
+        prevButton: '.new__prev',
+        nextButton: '.new__next',
+        nested: 'inner',
+        mouseDrag: true,
+    });
+};
