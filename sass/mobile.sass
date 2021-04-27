@@ -1,3 +1,6 @@
+@media screen and ( min-width: 768px )
+    nav ul li .container
+        top: 100%
 @media screen and (max-width: 767px)
     body.open-menu .headerBottom .mobile_m .one, body.overflow-search .headerBottom .mobile_m .one, body.open-sidebar .headerBottom .mobile_m .one
         -webkit-transform: rotate(45deg)
@@ -115,8 +118,17 @@
         margin-top: 100px
         padding: 0 20px
     header .headerBottom .headerBottom__contact
-        top: 65px
-        font-size: 18px
+        text-align: center
+        width: calc(100% - 40px)
+        top: 70px
+        font-size: 14px
+        line-height: 35px
+    header .headerBottom .headerBottom__contact .headerBottom__call
+        display: block
+        font-size: 20px
+        font-weight: bold
+    header nav .headerBottom__list
+        margin-top: 140px
     header nav .headerBottom__list .headerBottom__item a
         padding: 0
     header nav .headerBottom__list .headerBottom__item .container ul
