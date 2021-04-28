@@ -341,8 +341,8 @@
   }
   .object__content {
     border: 1px solid #F1F1F1;
-    -webkit-box-shadow: 0px 4px 10px black;
-    box-shadow: 0px 4px 10px black;
+    -webkit-box-shadow: 0px 4px 10px #0000000D;
+    box-shadow: 0px 4px 10px #0000000D;
     padding: 30px;
   }
   .object__title {
