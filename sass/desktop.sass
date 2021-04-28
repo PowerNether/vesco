@@ -98,8 +98,14 @@
     &__elem::after
         background: none
 
-    &__sliderInner .tns-item
+    &__item
+        max-width: 304px
+
+    &__sliderInner .tns-item img
+        min-width: 304px
+        height: 228px
         object-fit: fill
+        transition: all .5s
 
     &__image .tns-outer
         width: 100%

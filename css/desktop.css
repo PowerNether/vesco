@@ -132,9 +132,17 @@
   background: none;
 }
 
-.object__sliderInner .tns-item {
+.object__item {
+  max-width: 304px;
+}
+
+.object__sliderInner .tns-item img {
+  min-width: 304px;
+  height: 228px;
   -o-object-fit: fill;
      object-fit: fill;
+  -webkit-transition: all .5s;
+  transition: all .5s;
 }
 
 .object__image .tns-outer {
