@@ -42,15 +42,26 @@ if ($('.siderbarTab').length) {
         var box = $(this).attr('id');
         sliders[box] = tns({
             container: '#' + box + ' .object__slider',
-            fixedWidth: 304,
-            gutter: 32,
-            items: 4,
+            fixedWidth: 280,
+            gutter: 16,
+            items: 1,
             nav: false,
             lazyload: true,
             mouseDrag: true,
             swipeAngle: false,
             speed: 400,
-            controlsText: ['<span class="object__next"><span class="object__prev-icon"></span></span>', '<span class="object__next"><span class="object__next-icon"></span></span>']
+            controlsText: ['<span class="object__next"><span class="object__prev-icon"></span></span>', '<span class="object__next"><span class="object__next-icon"></span></span>'],
+            center: true,
+            responsive: {
+                "601": {
+                    gutter: 32,
+                    fixedWidth: 304,
+                },
+                "767": {
+                    items: 4,
+                    gutter: 32,
+                },
+            }
         });
     });
 }
