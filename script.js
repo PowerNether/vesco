@@ -36,108 +36,132 @@ $(document).on('click', '.mobile_p', function () {
         $('body').toggleClass('open-menu');
     }
 });
-
-if ($('.cottegesSlider').length) {
-    var cottegesSlider = tns({
-        container: '.cottegesSlider',
-        fixedWidth: 304,
-        items: 4,
-        gutter: 32,
-        nav: false,
-        prevButton: '.cotteges__prev',
-        nextButton: '.cotteges__next',
-        nested: 'inner',
-        mouseDrag: true,
+if ($('.siderbarTab').length) {
+    var sliders = new Object();
+    $('.siderbarTab').each(function () {
+        var box = $(this).attr('id');
+        sliders[box] = tns({
+            container: '#' + box + ' .object__slider',
+            fixedWidth: 304,
+            gutter: 32,
+            items: 4,
+            nav: false,
+            lazyload: true,
+            mouseDrag: true,
+            swipeAngle: false,
+            speed: 400,
+            controlsText: ['<span class="object__next"><span class="object__prev-icon"></span></span>', '<span class="object__next"><span class="object__next-icon"></span></span>']
+        });
     });
-};
-if ($('.apartmentsSlider').length) {
-    var apartmentsSlider = tns({
-        container: '.apartmentsSlider',
-        fixedWidth: 304,
-        items: 4,
-        gutter: 32,
-        nav: false,
-        prevButton: '.apartments__prev',
-        nextButton: '.apartments__next',
-        nested: 'inner',
-        mouseDrag: true,
-    });
-};
-if ($('.cottegeSliderLast').length) {
-    var cottegesSlider = tns({
-        container: '.cottegeSliderLast',
-        fixedWidth: 304,
-        items: 4,
-        gutter: 32,
-        nav: false,
-        prevButton: '.last__prev',
-        nextButton: '.last__next',
-        nested: 'inner',
-        mouseDrag: true,
-    });
-};
-if ($('.apartmentSliderLast').length) {
-    var cottegesSlider = tns({
-        container: '.apartmentSliderLast',
-        fixedWidth: 304,
-        items: 4,
-        gutter: 32,
-        nav: false,
-        prevButton: '.last__prev',
-        nextButton: '.last__next',
-        nested: 'inner',
-        mouseDrag: true,
-    });
-};
-if ($('.taunhouseSliderLast').length) {
-    var cottegesSlider = tns({
-        container: '.taunhouseSliderLast',
-        fixedWidth: 304,
-        items: 4,
-        gutter: 32,
-        nav: false,
-        prevButton: '.last__prev',
-        nextButton: '.last__next',
-        nested: 'inner',
-        mouseDrag: true,
-    });
-};
-if ($('.flatSliderLast').length) {
-    var cottegesSlider = tns({
-        container: '.flatSliderLast',
-        fixedWidth: 304,
-        items: 4,
-        gutter: 32,
-        nav: false,
-        prevButton: '.last__prev',
-        nextButton: '.last__next',
-        nested: 'inner',
-        mouseDrag: true,
-    });
-};
-if ($('.villagesSliderNew').length) {
-    var cottegesSlider = tns({
-        container: '.villagesSliderNew',
-        fixedWidth: 304,
-        items: 4,
-        gutter: 32,
-        nav: false,
-        prevButton: '.new__prev',
-        nextButton: '.new__next',
-        nested: 'inner',
-        mouseDrag: true,
-    });
-};
-if ($('.complexesSliderNew').length) {
-    var cottegesSlider = tns({
-        container: '.complexesSliderNew',
-        fixedWidth: 304,
-        items: 4,
-        gutter: 32,
-        nav: false,
-        prevButton: '.new__prev',
-        nextButton: '.new__next',
-        nested: 'inner',
-        mouseDrag: true,
-    });
-};
+}
+$('.sidebarMenu__item').on('click', function () {
+    console.log()
+    $(this).parents(".property-front").find($('.siderbarTab-active')).removeClass('siderbarTab-active')
+    $(this).parents(".property-front").find($(this).attr('href')).addClass('siderbarTab-active')
+})
+// $(document).ready(function () {
+//     if ($('.cottegesSlider').length) {
+//         var cottegesSlider = tns({
+//             container: '.cottegesSlider',
+//             fixedWidth: 304,
+//             items: 4,
+//             gutter: 32,
+//             nav: false,
+//             prevButton: '.cotteges__prev',
+//             nextButton: '.cotteges__next',
+//             nested: 'inner',
+//             mouseDrag: true,
+//         });
+//     };
+//     if ($('.apartmentsSlider').length) {
+//         var apartmentsSlider = tns({
+//             container: '.apartmentsSlider',
+//             fixedWidth: 304,
+//             items: 4,
+//             gutter: 32,
+//             nav: false,
+//             prevButton: '.apartments__prev',
+//             nextButton: '.apartments__next',
+//             nested: 'inner',
+//             mouseDrag: true,
+//         });
+//     };
+//     if ($('.cottegeSliderLast').length) {
+//         var cottegeSliderLast = tns({
+//             container: '.cottegeSliderLast',
+//             fixedWidth: 304,
+//             items: 4,
+//             gutter: 32,
+//             nav: false,
+//             prevButton: '.last__prev',
+//             nextButton: '.last__next',
+//             nested: 'inner',
+//             mouseDrag: true,
+//         });
+//     };
+//     if ($('.apartmentSliderLast').length) {
+//         var apartmentSliderLast = tns({
+//             container: '.apartmentSliderLast',
+//             fixedWidth: 304,
+//             items: 4,
+//             gutter: 32,
+//             nav: false,
+//             prevButton: '.last__prev',
+//             nextButton: '.last__next',
+//             nested: 'inner',
+//             mouseDrag: true,
+//         });
+//     };
+//     if ($('.taunhouseSliderLast').length) {
+//         var taunhouseSliderLast = tns({
+//             container: '.taunhouseSliderLast',
+//             fixedWidth: 304,
+//             items: 4,
+//             gutter: 32,
+//             nav: false,
+//             prevButton: '.last__prev',
+//             nextButton: '.last__next',
+//             nested: 'inner',
+//             mouseDrag: true,
+//         });
+//     };
+//     if ($('.flatSliderLast').length) {
+//         var flatSliderLast = tns({
+//             container: '.flatSliderLast',
+//             fixedWidth: 304,
+//             items: 4,
+//             gutter: 32,
+//             nav: false,
+//             prevButton: '.last__prev',
+//             nextButton: '.last__next',
+//             nested: 'inner',
+//             mouseDrag: true,
+//         });
+//     };
+//     if ($('.villagesSliderNew').length) {
+//         var villagesSliderNew = tns({
+//             container: '.villagesSliderNew',
+//             fixedWidth: 304,
+//             items: 4,
+//             gutter: 32,
+//             nav: false,
+//             prevButton: '.new__prev',
+//             nextButton: '.new__next',
+//             nested: 'inner',
+//             mouseDrag: true,
+//         });
+//     };
+//     if ($('.complexesSliderNew').length) {
+//         var complexesSliderNew = tns({
+//             container: '.complexesSliderNew',
+//             fixedWidth: 304,
+//             items: 4,
+//             gutter: 32,
+//             nav: false,
+//             prevButton: '.new__prev',
+//             nextButton: '.new__next',
+//             nested: 'inner',
+//             mouseDrag: true,
+//         });
+//     };
+// })
