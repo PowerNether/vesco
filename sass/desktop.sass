@@ -92,7 +92,6 @@
 
     &__elem
         width: 100%
-        max-height: 450px
         position: relative
         overflow-y: hidden
 
@@ -102,12 +101,6 @@
     &__item
         max-width: 336px
         display: inline-block
-
-    &__sliderInner .tns-item img
-        min-width: 304px
-        height: 228px
-        object-fit: fill
-        transition: all .5s
 
     &__image .tns-outer
         width: 100%
@@ -157,3 +150,6 @@
     &__text-bold
         display: block
         font-weight: bold
+
+    &___image .tns-item
+        object-fit: cover

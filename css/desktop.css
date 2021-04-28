@@ -124,7 +124,6 @@
 
 .object__elem {
   width: 100%;
-  max-height: 450px;
   position: relative;
   overflow-y: hidden;
 }
@@ -136,15 +135,6 @@
 .object__item {
   max-width: 336px;
   display: inline-block;
-}
-
-.object__sliderInner .tns-item img {
-  min-width: 304px;
-  height: 228px;
-  -o-object-fit: fill;
-     object-fit: fill;
-  -webkit-transition: all .5s;
-  transition: all .5s;
 }
 
 .object__image .tns-outer {
@@ -206,4 +196,9 @@
 .object__text-bold {
   display: block;
   font-weight: bold;
+}
+
+.object___image .tns-item {
+  -o-object-fit: cover;
+     object-fit: cover;
 }

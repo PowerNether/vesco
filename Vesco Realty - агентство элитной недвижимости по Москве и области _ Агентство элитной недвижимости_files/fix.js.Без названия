@@ -96,6 +96,7 @@ if ($('.object__sliderInner').length) {
       nav: true,
       nested: 'outer',
       controls: false,
+	  fixedWidth: 304,
     });
   });
 };
