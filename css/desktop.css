@@ -134,6 +134,7 @@
 
 .object__item {
   max-width: 336px;
+  display: inline-block;
 }
 
 .object__sliderInner .tns-item img {
