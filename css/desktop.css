@@ -188,6 +188,11 @@
   right: 16px;
 }
 
+.object__desc-two .object__text {
+  width: calc( 100% / 2 - 20px);
+  margin: 0 10px;
+}
+
 .object__text-bold {
   display: block;
   font-weight: bold;
