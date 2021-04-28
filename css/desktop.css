@@ -134,6 +134,7 @@
 
 .object__item {
   max-width: 336px;
+  padding-right: 32px;
   display: inline-block;
 }
 
